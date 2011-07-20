@@ -22,8 +22,10 @@ func main() {
 		v := 0
 		println(1 / v)
 	}).Catch(func(n int) {
+		// not pass
 		println("Cached int exception:", n)
 	}).Catch(func(s string) {
+		// not pass
 		println("Cached string exception:", s)
 	}).Catch(func(e RuntimeError) {
 		fmt.Println("Cached runtime exception:", e)

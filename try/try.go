@@ -6,14 +6,14 @@ import (
 	"runtime"
 )
 
-const pkgName = "github.com/mattn/go-try/try"
-
+//StackInfo store code informations when catched exception.
 type StackInfo struct {
 	PC uintptr
 	File string
 	Line int
 }
 
+//RuntimeError is wrapper of runtime.errorString and stacktrace.
 type RuntimeError struct {
 	fmt.Stringer
 	Message string
@@ -28,6 +28,7 @@ type CatchOrFinally struct {
 	e interface{}
 }
 
+//Try call the function. And return interface that can call Catch or Finally.
 func Try(f func()) (r *CatchOrFinally) {
 	defer func() {
 		if e := recover(); e != nil {
@@ -38,6 +39,8 @@ func Try(f func()) (r *CatchOrFinally) {
 	return nil
 }
 
+//Catch call the exception handler. And return interface CatchOrFinally that
+//can call Catch or Finally.
 func (c *CatchOrFinally) Catch(f interface{}) (r *CatchOrFinally) {
 	if c == nil || c.e == nil {
 		return nil
@@ -72,10 +75,12 @@ func (c *CatchOrFinally) Catch(f interface{}) (r *CatchOrFinally) {
 	return c
 }
 
+//Finally always be called if defined.
 func (c *CatchOrFinally) Finally(f interface{}) {
 	reflect.ValueOf(f).Call([]reflect.Value{})
 }
 
+//Throw is wrapper of panic().
 func Throw(e interface{}) {
 	panic(e)
 }
