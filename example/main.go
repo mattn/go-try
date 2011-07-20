@@ -2,20 +2,34 @@ package main
 
 import (
 	. "github.com/mattn/go-try/try"
+	"fmt"
 )
 
 func main() {
 	Try(func() {
-		//panic("foo")
-		//panic(1)
+		Try(func() {
+			panic(1)
+		}).Catch(func(n int) {
+			println("int exception:", n)
+		})
+
+		Try(func() {
+			panic("foo")
+		}).Catch(func(s string) {
+			println("string exception:", s)
+		})
+
 		v := 0
 		println(1 / v)
 	}).Catch(func(n int) {
-		println("int exception:", n)
+		println("Cached int exception:", n)
 	}).Catch(func(s string) {
-		println("string exception:", s)
+		println("Cached string exception:", s)
 	}).Catch(func(e RuntimeError) {
-		println("runtime exception:", e)
+		fmt.Println("Cached runtime exception:", e)
+		for _, st := range e.StackTrace {
+			fmt.Printf("  %s:%d\n", st.File, st.Line)
+		}
 	}).Finally(func() {
 		println("finalize")
 	})
