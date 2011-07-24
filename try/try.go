@@ -26,13 +26,25 @@ func (rte RuntimeError) String() string {
 
 type CatchOrFinally struct {
 	e interface{}
+	StackTrace []StackInfo
 }
 
 //Try call the function. And return interface that can call Catch or Finally.
 func Try(f func()) (r *CatchOrFinally) {
 	defer func() {
 		if e := recover(); e != nil {
-			r = &CatchOrFinally{e}
+			r = &CatchOrFinally{}
+			r.e = e
+			i := 4
+			for {
+				if p, f, l, o := runtime.Caller(i); o {
+					f, l = runtime.FuncForPC(p).FileLine(p)
+					r.StackTrace = append(r.StackTrace, StackInfo{p, f, l})
+					i++
+				} else {
+					break
+				}
+			}
 		}
 	}()
 	reflect.ValueOf(f).Call([]reflect.Value{})
@@ -55,15 +67,7 @@ func (c *CatchOrFinally) Catch(f interface{}) (r *CatchOrFinally) {
 		if rhs == "runtime.errorString" && lhs == "try.RuntimeError" {
 			var rte RuntimeError
 			rte.Message = c.e.(fmt.Stringer).String()
-			i := 1
-			for {
-				if p, f, l, o := runtime.Caller(i); o {
-					rte.StackTrace = append(rte.StackTrace, StackInfo{p, f, l})
-					i++
-				} else {
-					break
-				}
-			}
+			rte.StackTrace = c.StackTrace
 			ev := reflect.ValueOf(rte)
 			reflect.ValueOf(f).Call([]reflect.Value{ev})
 			return nil
