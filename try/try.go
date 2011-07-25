@@ -35,7 +35,7 @@ func Try(f func()) (r *CatchOrFinally) {
 		if e := recover(); e != nil {
 			r = &CatchOrFinally{}
 			r.e = e
-			i := 4
+			i := 1
 			for {
 				if p, f, l, o := runtime.Caller(i); o {
 					f, l = runtime.FuncForPC(p).FileLine(p)
