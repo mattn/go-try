@@ -9,5 +9,5 @@ func main() {
 		panic(1)
 	}).Catch(func(n int) {
 		println("int exception:", n)
-	})
+	}).Catch() // catch all other exceptions.
 }

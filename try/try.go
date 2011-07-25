@@ -53,11 +53,14 @@ func Try(f func()) (r *CatchOrFinally) {
 
 //Catch call the exception handler. And return interface CatchOrFinally that
 //can call Catch or Finally.
-func (c *CatchOrFinally) Catch(f interface{}) (r *CatchOrFinally) {
+func (c *CatchOrFinally) Catch(f ...interface{}) (r *CatchOrFinally) {
 	if c == nil || c.e == nil {
 		return nil
 	}
-	rf := reflect.ValueOf(f)
+	if len(f) == 0 && c.e != nil {
+		Throw(c.e)
+	}
+	rf := reflect.ValueOf(f[0])
 	ft := rf.Type()
 	if ft.NumIn() > 0 {
 		it := ft.In(0)
