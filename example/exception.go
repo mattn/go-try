@@ -32,7 +32,7 @@ func main() {
 		for _, st := range e.StackTrace {
 			fmt.Printf("  %s:%d\n", st.File, st.Line)
 		}
-	}).Catch().Finally(func() {
+	}).OrThrow().Finally(func() {
 		println("finalize")
 	})
 }

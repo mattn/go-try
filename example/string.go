@@ -9,5 +9,5 @@ func main() {
 		panic("foo")
 	}).Catch(func(s string) {
 		println("string exception:", s)
-	}).Catch() // catch all other exceptions.
+	}).OrThrow()
 }

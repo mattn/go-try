@@ -53,14 +53,10 @@ func Try(f func()) (r *CatchOrFinally) {
 
 //Catch call the exception handler. And return interface CatchOrFinally that
 //can call Catch or Finally.
-func (c *CatchOrFinally) Catch(fs ...interface{}) (r *CatchOrFinally) {
+func (c *CatchOrFinally) Catch(f ...interface{}) (r *CatchOrFinally) {
 	if c == nil || c.e == nil {
 		return nil
 	}
-	if len(fs) == 0 && c.e != nil {
-		Throw(c.e)
-	}
-	f := fs[0]
 	rf := reflect.ValueOf(f)
 	ft := rf.Type()
 	if ft.NumIn() > 0 {
@@ -87,6 +83,13 @@ func (c *CatchOrFinally) Catch(fs ...interface{}) (r *CatchOrFinally) {
 //Finally always be called if defined.
 func (c *CatchOrFinally) Finally(f interface{}) {
 	reflect.ValueOf(f).Call([]reflect.Value{})
+}
+
+//OrThrow throw error then never catch block entered.
+func (c *CatchOrFinally) OrThrow() {
+	if c != nil && c.e != nil {
+		Throw(c.e)
+	}
 }
 
 //Throw is wrapper of panic().
