@@ -29,6 +29,10 @@ type CatchOrFinally struct {
 	StackTrace []StackInfo
 }
 
+type OrThrowable struct {
+	e interface{}
+}
+
 //Try call the function. And return interface that can call Catch or Finally.
 func Try(f func()) (r *CatchOrFinally) {
 	defer func() {
@@ -53,7 +57,7 @@ func Try(f func()) (r *CatchOrFinally) {
 
 //Catch call the exception handler. And return interface CatchOrFinally that
 //can call Catch or Finally.
-func (c *CatchOrFinally) Catch(f ...interface{}) (r *CatchOrFinally) {
+func (c *CatchOrFinally) Catch(f interface{}) (r *CatchOrFinally) {
 	if c == nil || c.e == nil {
 		return nil
 	}
@@ -81,12 +85,20 @@ func (c *CatchOrFinally) Catch(f ...interface{}) (r *CatchOrFinally) {
 }
 
 //Finally always be called if defined.
-func (c *CatchOrFinally) Finally(f interface{}) {
+func (c *CatchOrFinally) Finally(f interface{}) (r *OrThrowable) {
 	reflect.ValueOf(f).Call([]reflect.Value{})
+	return &OrThrowable{c.e}
 }
 
 //OrThrow throw error then never catch block entered.
 func (c *CatchOrFinally) OrThrow() {
+	if c != nil && c.e != nil {
+		Throw(c.e)
+	}
+}
+
+//OrThrow throw error then never catch block entered.
+func (c *OrThrowable) OrThrow() {
 	if c != nil && c.e != nil {
 		Throw(c.e)
 	}
