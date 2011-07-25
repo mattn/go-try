@@ -23,12 +23,12 @@ func main() {
 		println(1 / v)
 	}).Catch(func(n int) {
 		// not pass
-		println("Catched int exception:", n)
+		println("Caught int exception:", n)
 	}).Catch(func(s string) {
 		// not pass
-		println("Catched string exception:", s)
+		println("Caught string exception:", s)
 	}).Catch(func(e RuntimeError) {
-		fmt.Println("Catched runtime exception:", e)
+		fmt.Println("Caught runtime exception:", e)
 		for _, st := range e.StackTrace {
 			fmt.Printf("  %s:%d\n", st.File, st.Line)
 		}
