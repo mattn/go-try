@@ -42,7 +42,6 @@ func Try(f func()) (r *CatchOrFinally) {
 			i := 1
 			for {
 				if p, f, l, o := runtime.Caller(i); o {
-					f, l = runtime.FuncForPC(p).FileLine(p)
 					r.StackTrace = append(r.StackTrace, StackInfo{p, f, l})
 					i++
 				} else {
